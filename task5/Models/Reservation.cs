@@ -3,12 +3,12 @@ using task5.Enums;
 namespace task5.Models;
 
 public class Reservation {
-    int Id { get; set; }
-    int RoomId { get; set; }
-    string OrganizerName { get; set; }
-    string Topic { get; set; }
-    DateTime Date { get; set; }
-    TimeOnly StartTime { get; set; }
-    TimeOnly EndTime { get; set; }
-    ReservationStatus Status { get; set; }
+    public int Id { get; set; }
+    public int RoomId { get; set; }
+    public string OrganizerName { get; set; }
+    public string Topic { get; set; }
+    public DateOnly Date { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
+    public ReservationStatus Status { get; set; }
 }

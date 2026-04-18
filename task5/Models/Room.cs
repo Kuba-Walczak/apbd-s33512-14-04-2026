@@ -3,11 +3,11 @@ using task5.Enums;
 namespace task5.Models;
 
 public class Room {
-    int Id { get; set; }
-    string Name { get; set; }
-    int BuildingCode { get; set; }
-    int Floor { get; set; }
-    int Capacity { get; set; }
-    bool HasProjector  { get; set; }
-    bool IsActive { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string BuildingCode { get; set; }
+    public int Floor { get; set; }
+    public int Capacity { get; set; }
+    public bool HasProjector  { get; set; }
+    public bool IsActive { get; set; }
 }
