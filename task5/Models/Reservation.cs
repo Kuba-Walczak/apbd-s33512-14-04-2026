@@ -21,6 +21,6 @@ public class Reservation : IValidatableObject {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (EndTime <= StartTime)
-            yield return new ValidationResult("EndTime must be greater than or equal to StartTime");
+            yield return new ValidationResult("EndTime must be later than StartTime");
     }
 }

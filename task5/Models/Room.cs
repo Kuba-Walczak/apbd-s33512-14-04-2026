@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using task5.Enums;
 
 namespace task5.Models;
 
