@@ -19,7 +19,7 @@ public class RoomController(IRoomService roomService) : ControllerBase {
     public IActionResult GetById(int id) {
         var room = roomService.GetById(id);
         if (room == null) {
-            return NotFound();
+            return NotFound("The specified room does not exist.");
         }
         return Ok(room);
     }
@@ -39,7 +39,7 @@ public class RoomController(IRoomService roomService) : ControllerBase {
     [HttpPut("{id:int}")]
     public IActionResult Update(int id, [FromBody]Room room) {
         if (!roomService.Update(id, room)) {
-            return NotFound();
+            return NotFound("The specified room does not exist.");
         }
         return NoContent();
     }
@@ -50,7 +50,7 @@ public class RoomController(IRoomService roomService) : ControllerBase {
         return result switch {
             ResponseResult.Success => NoContent(),
             ResponseResult.Conflict => Conflict("Cannot delete a room that has active reservations."),
-            _ => NotFound()
+            _ => NotFound("The specified room does not exist.")
         };
     }
 }

@@ -19,7 +19,7 @@ public class ReservationController(IReservationService reservationService) : Con
     public IActionResult GetById(int id) {
         var reservation = reservationService.GetById(id);
         if (reservation == null) {
-            return NotFound();
+            return NotFound("The specified reservation does not exist.");
         }
         return Ok(reservation);
     }
@@ -29,8 +29,9 @@ public class ReservationController(IReservationService reservationService) : Con
         var result = reservationService.Add(reservation, out var created);
         return result switch {
             ResponseResult.Success => CreatedAtAction(nameof(GetById), new { created!.Id }, created),
-            ResponseResult.Conflict => Conflict("The room is inactive or the time slot overlaps with an existing reservation."),
-            _ => NotFound()
+            ResponseResult.BadRequest => BadRequest("The specified room is inactive."),
+            ResponseResult.Conflict => Conflict("The time slot overlaps with an existing reservation."),
+            _ => NotFound("The specified room does not exist.")
         };
     }
 
@@ -39,15 +40,16 @@ public class ReservationController(IReservationService reservationService) : Con
         var result = reservationService.Update(id, reservation);
         return result switch {
             ResponseResult.Success => NoContent(),
-            ResponseResult.Conflict => Conflict("The room is inactive or the time slot overlaps with an existing reservation."),
-            _ => NotFound()
+            ResponseResult.BadRequest => BadRequest("The specified room is inactive."),
+            ResponseResult.Conflict => Conflict("The time slot overlaps with an existing reservation."),
+            _ => NotFound("The reservation or the specified room does not exist.")
         };
     }
 
     [HttpDelete("{id:int}")]
     public IActionResult Delete(int id) {
         if (!reservationService.Delete(id)) {
-            return NotFound();
+            return NotFound("The specified reservation does not exist.");
         }
         return NoContent();
     }

@@ -30,7 +30,7 @@ public class ReservationService : IReservationService {
             return ResponseResult.NotFound;
         }
         if (!room.IsActive) {
-            return ResponseResult.Conflict;
+            return ResponseResult.BadRequest;
         }
         var hasOverlap = DataStorage.Reservations.Any(r =>
             r.RoomId == reservation.RoomId &&
@@ -57,7 +57,7 @@ public class ReservationService : IReservationService {
             return ResponseResult.NotFound;
         }
         if (!room.IsActive) {
-            return ResponseResult.Conflict;
+            return ResponseResult.BadRequest;
         }
         var hasOverlap = DataStorage.Reservations.Any(r =>
             r.Id != id &&
