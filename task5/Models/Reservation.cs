@@ -18,9 +18,9 @@ public class Reservation : IValidatableObject {
     public TimeOnly EndTime { get; set; }
     public ReservationStatus Status { get; set; }
 
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-        if (EndTime <= StartTime)
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) {
+        if (EndTime <= StartTime) {
             yield return new ValidationResult("EndTime must be later than StartTime");
+        }
     }
 }

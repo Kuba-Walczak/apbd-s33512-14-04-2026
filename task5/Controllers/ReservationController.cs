@@ -10,7 +10,7 @@ namespace task5.Controllers;
 public class ReservationController(IReservationService reservationService) : ControllerBase {
 
     [HttpGet]
-    public IActionResult GetReservations([FromQuery] DateOnly? date, [FromQuery] ReservationStatus? status, [FromQuery] int? roomId) {
+    public IActionResult GetReservations([FromQuery]DateOnly? date, [FromQuery]ReservationStatus? status, [FromQuery]int? roomId) {
         var reservations = reservationService.GetFiltered(date, status, roomId);
         return Ok(reservations);
     }
@@ -18,27 +18,30 @@ public class ReservationController(IReservationService reservationService) : Con
     [HttpGet("{id:int}")]
     public IActionResult GetById(int id) {
         var reservation = reservationService.GetById(id);
-        if (reservation is null) {
+        if (reservation == null) {
             return NotFound();
         }
         return Ok(reservation);
     }
 
     [HttpPost]
-    public IActionResult Add([FromBody] Reservation reservation) {
-        var created = reservationService.Add(reservation);
-        if (created is null) {
-            return BadRequest();
-        }
-        return CreatedAtAction(nameof(GetById), new { created.Id }, created);
+    public IActionResult Add([FromBody]Reservation reservation) {
+        var result = reservationService.Add(reservation, out var created);
+        return result switch {
+            ResponseResult.Success => CreatedAtAction(nameof(GetById), new { created!.Id }, created),
+            ResponseResult.Conflict => Conflict("The room is inactive or the time slot overlaps with an existing reservation."),
+            _ => NotFound()
+        };
     }
 
     [HttpPut("{id:int}")]
-    public IActionResult Update(int id, [FromBody] Reservation reservation) {
-        if (!reservationService.Update(id, reservation)) {
-            return NotFound();
-        }
-        return NoContent();
+    public IActionResult Update(int id, [FromBody]Reservation reservation) {
+        var result = reservationService.Update(id, reservation);
+        return result switch {
+            ResponseResult.Success => NoContent(),
+            ResponseResult.Conflict => Conflict("The room is inactive or the time slot overlaps with an existing reservation."),
+            _ => NotFound()
+        };
     }
 
     [HttpDelete("{id:int}")]

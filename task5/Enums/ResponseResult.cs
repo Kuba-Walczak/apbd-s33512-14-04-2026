@@ -1,6 +1,6 @@
 namespace task5.Enums;
 
-public enum DeleteResult {
+public enum ResponseResult {
     Success,
     NotFound,
     Conflict

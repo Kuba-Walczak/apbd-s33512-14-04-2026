@@ -9,5 +9,5 @@ public interface IRoomService {
     IEnumerable<Room> GetFiltered(int? minCapacity, bool? hasProjector, bool? activeOnly);
     void Add(Room room);
     bool Update(int id, Room room);
-    DeleteResult Delete(int id);
+    ResponseResult Delete(int id);
 }

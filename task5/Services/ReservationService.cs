@@ -6,8 +6,9 @@ namespace task5.Services;
 
 public class ReservationService : IReservationService {
     public Reservation? GetById(int id) {
-        return DataStorage.Reservations.FirstOrDefault(r=> r.Id == id);
+        return DataStorage.Reservations.FirstOrDefault(r => r.Id == id);
     }
+
     public IEnumerable<Reservation> GetFiltered(DateOnly? date, ReservationStatus? status, int? roomId) {
         var query = DataStorage.Reservations.AsEnumerable();
         if (date.HasValue) {
@@ -21,34 +22,52 @@ public class ReservationService : IReservationService {
         }
         return query;
     }
-    public Reservation? Add(Reservation reservation) {
+
+    public ResponseResult Add(Reservation reservation, out Reservation? created) {
+        created = null;
         var room = DataStorage.Rooms.FirstOrDefault(r => r.Id == reservation.RoomId);
         if (room == null) {
-            return null;
+            return ResponseResult.NotFound;
         }
         if (!room.IsActive) {
-            return null;
+            return ResponseResult.Conflict;
         }
-        var hasOverlap = DataStorage.Reservations.Any(r => r.RoomId == reservation.RoomId && r.Date == reservation.Date && r.Status != ReservationStatus.Cancelled && r.StartTime < reservation.EndTime && reservation.StartTime < r.EndTime);
+        var hasOverlap = DataStorage.Reservations.Any(r =>
+            r.RoomId == reservation.RoomId &&
+            r.Date == reservation.Date &&
+            r.Status != ReservationStatus.Cancelled &&
+            r.StartTime < reservation.EndTime &&
+            reservation.StartTime < r.EndTime);
         if (hasOverlap) {
-            return null;
+            return ResponseResult.Conflict;
         }
         reservation.Id = DataStorage.NextReservationId;
         DataStorage.Reservations.Add(reservation);
-        return reservation;
+        created = reservation;
+        return ResponseResult.Success;
     }
-    public bool Update(int id, Reservation reservation) {
+
+    public ResponseResult Update(int id, Reservation reservation) {
         var existing = DataStorage.Reservations.FirstOrDefault(r => r.Id == id);
         if (existing == null) {
-            return false;
+            return ResponseResult.NotFound;
         }
         var room = DataStorage.Rooms.FirstOrDefault(r => r.Id == reservation.RoomId);
-        if (room == null || !room.IsActive) {
-            return false;
+        if (room == null) {
+            return ResponseResult.NotFound;
         }
-        var hasOverlap = DataStorage.Reservations.Any(r => r.Id != id && r.RoomId == reservation.RoomId && r.Date == reservation.Date && r.Status != ReservationStatus.Cancelled && r.StartTime < reservation.EndTime && reservation.StartTime < r.EndTime);
+        if (!room.IsActive) {
+            return ResponseResult.Conflict;
+        }
+        var hasOverlap = DataStorage.Reservations.Any(r =>
+            r.Id != id &&
+            r.RoomId == reservation.RoomId &&
+            r.Date == reservation.Date &&
+            r.Status != ReservationStatus.Cancelled &&
+            r.StartTime < reservation.EndTime &&
+            reservation.StartTime < r.EndTime);
         if (hasOverlap) {
-            return false;
+            return ResponseResult.Conflict;
         }
         existing.RoomId = reservation.RoomId;
         existing.OrganizerName = reservation.OrganizerName;
@@ -57,8 +76,9 @@ public class ReservationService : IReservationService {
         existing.StartTime = reservation.StartTime;
         existing.EndTime = reservation.EndTime;
         existing.Status = reservation.Status;
-        return true;
+        return ResponseResult.Success;
     }
+
     public bool Delete(int id) {
         var existing = DataStorage.Reservations.FirstOrDefault(r => r.Id == id);
         if (existing == null) {

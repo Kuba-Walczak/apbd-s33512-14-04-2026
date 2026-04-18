@@ -10,7 +10,7 @@ namespace task5.Controllers;
 public class RoomController(IRoomService roomService) : ControllerBase {
 
     [HttpGet]
-    public IActionResult GetRooms([FromQuery] int? minCapacity, [FromQuery] bool? hasProjector, [FromQuery] bool? activeOnly) {
+    public IActionResult GetRooms([FromQuery]int? minCapacity, [FromQuery]bool? hasProjector, [FromQuery]bool? activeOnly) {
         var rooms = roomService.GetFiltered(minCapacity, hasProjector, activeOnly);
         return Ok(rooms);
     }
@@ -18,7 +18,7 @@ public class RoomController(IRoomService roomService) : ControllerBase {
     [HttpGet("{id:int}")]
     public IActionResult GetById(int id) {
         var room = roomService.GetById(id);
-        if (room is null) {
+        if (room == null) {
             return NotFound();
         }
         return Ok(room);
@@ -31,15 +31,16 @@ public class RoomController(IRoomService roomService) : ControllerBase {
     }
 
     [HttpPost]
-    public IActionResult Add([FromBody] Room room) {
+    public IActionResult Add([FromBody]Room room) {
         roomService.Add(room);
         return CreatedAtAction(nameof(GetById), new { room.Id }, room);
     }
 
     [HttpPut("{id:int}")]
-    public IActionResult Update(int id, [FromBody] Room room) {
-        if (!roomService.Update(id, room))
+    public IActionResult Update(int id, [FromBody]Room room) {
+        if (!roomService.Update(id, room)) {
             return NotFound();
+        }
         return NoContent();
     }
 
@@ -47,8 +48,8 @@ public class RoomController(IRoomService roomService) : ControllerBase {
     public IActionResult Delete(int id) {
         var result = roomService.Delete(id);
         return result switch {
-            DeleteResult.Success => NoContent(),
-            DeleteResult.Conflict => Conflict(),
+            ResponseResult.Success => NoContent(),
+            ResponseResult.Conflict => Conflict("Cannot delete a room that has active reservations."),
             _ => NotFound()
         };
     }

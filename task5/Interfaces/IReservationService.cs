@@ -6,7 +6,7 @@ namespace task5.Services;
 public interface IReservationService {
     Reservation? GetById(int id);
     IEnumerable<Reservation> GetFiltered(DateOnly? date, ReservationStatus? status, int? roomId);
-    Reservation? Add(Reservation reservation);
+    ResponseResult Add(Reservation reservation, out Reservation? created);
+    ResponseResult Update(int id, Reservation reservation);
     bool Delete(int id);
-    bool Update(int id, Reservation reservation);
 }
