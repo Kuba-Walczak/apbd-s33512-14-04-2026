@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using task5.Enums;
 
 namespace task5.Models;
 
@@ -16,7 +15,7 @@ public class Reservation : IValidatableObject {
     public DateOnly Date { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
-    public ReservationStatus Status { get; set; }
+    public string Status { get; set; } = null!;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) {
         if (EndTime <= StartTime) {

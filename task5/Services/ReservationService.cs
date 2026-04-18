@@ -9,13 +9,13 @@ public class ReservationService : IReservationService {
         return DataStorage.Reservations.FirstOrDefault(r => r.Id == id);
     }
 
-    public IEnumerable<Reservation> GetFiltered(DateOnly? date, ReservationStatus? status, int? roomId) {
+    public IEnumerable<Reservation> GetFiltered(DateOnly? date, string? status, int? roomId) {
         var query = DataStorage.Reservations.AsEnumerable();
         if (date.HasValue) {
             query = query.Where(r => r.Date == date.Value);
         }
-        if (status.HasValue) {
-            query = query.Where(r => r.Status == status.Value);
+        if (status != null) {
+            query = query.Where(r => r.Status == status);
         }
         if (roomId.HasValue) {
             query = query.Where(r => r.RoomId == roomId.Value);
@@ -35,7 +35,7 @@ public class ReservationService : IReservationService {
         var hasOverlap = DataStorage.Reservations.Any(r =>
             r.RoomId == reservation.RoomId &&
             r.Date == reservation.Date &&
-            r.Status != ReservationStatus.Cancelled &&
+            r.Status != "cancelled" &&
             r.StartTime < reservation.EndTime &&
             reservation.StartTime < r.EndTime);
         if (hasOverlap) {
@@ -63,7 +63,7 @@ public class ReservationService : IReservationService {
             r.Id != id &&
             r.RoomId == reservation.RoomId &&
             r.Date == reservation.Date &&
-            r.Status != ReservationStatus.Cancelled &&
+            r.Status != "cancelled" &&
             r.StartTime < reservation.EndTime &&
             reservation.StartTime < r.EndTime);
         if (hasOverlap) {

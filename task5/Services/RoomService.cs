@@ -52,7 +52,7 @@ public class RoomService : IRoomService {
             return ResponseResult.NotFound;
         }
         var hasReservations = DataStorage.Reservations.Any(r =>
-            r.RoomId == id && r.Status != ReservationStatus.Cancelled);
+            r.RoomId == id && r.Status != "cancelled");
         if (hasReservations) {
             return ResponseResult.Conflict;
         }

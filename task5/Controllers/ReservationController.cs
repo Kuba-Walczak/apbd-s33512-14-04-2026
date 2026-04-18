@@ -10,7 +10,7 @@ namespace task5.Controllers;
 public class ReservationController(IReservationService reservationService) : ControllerBase {
 
     [HttpGet]
-    public IActionResult GetReservations([FromQuery]DateOnly? date, [FromQuery]ReservationStatus? status, [FromQuery]int? roomId) {
+    public IActionResult GetReservations([FromQuery]DateOnly? date, [FromQuery]string? status, [FromQuery]int? roomId) {
         var reservations = reservationService.GetFiltered(date, status, roomId);
         return Ok(reservations);
     }
